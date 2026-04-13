@@ -315,6 +315,15 @@ body {
   color: var(--text);
 }
 
+.form-error {
+  background: #fdecea;
+  color: #d32f2f;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 0.82rem;
+  margin-bottom: 12px;
+}
+
 .form-group {
   margin-bottom: 16px;
 }

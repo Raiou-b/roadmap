@@ -27,14 +27,23 @@ export default function BlockModal({ block, onSave, onDelete, onClose }) {
   const isEditing = !!block?.id;
   const [form, setForm] = useState(() => getInitialForm(block));
 
+  const [error, setError] = useState('');
+
   const handleChange = (field, value) => {
     setForm((prev) => ({ ...prev, [field]: value }));
+    setError('');
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!form.text.trim()) return;
-    if (form.startAge >= form.endAge) return;
+    if (!form.text.trim()) {
+      setError('名前を入力してください');
+      return;
+    }
+    if (Number(form.startAge) >= Number(form.endAge)) {
+      setError('終了年齢は開始年齢より大きくしてください');
+      return;
+    }
     onSave({
       ...block,
       ...form,
@@ -48,6 +57,7 @@ export default function BlockModal({ block, onSave, onDelete, onClose }) {
       <div className="modal-content" onClick={(e) => e.stopPropagation()}>
         <h2>{isEditing ? 'ブロックを編集' : '新しいブロックを追加'}</h2>
         <form onSubmit={handleSubmit}>
+          {error && <div className="form-error">{error}</div>}
           <div className="form-group">
             <label>名前</label>
             <input

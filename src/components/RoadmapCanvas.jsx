@@ -43,7 +43,7 @@ export default function RoadmapCanvas({
     const x = e.clientX - rect.left + canvas.scrollLeft;
     const y = e.clientY - rect.top + canvas.scrollTop;
 
-    const age = Math.max(0, Math.floor((x - HEADER_WIDTH) / YEAR_WIDTH));
+    const age = Math.min(MAX_AGE, Math.max(0, Math.floor((x - HEADER_WIDTH) / YEAR_WIDTH)));
 
     let row = 'main';
     const headerHeight = 40;

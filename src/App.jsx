@@ -4,9 +4,8 @@ import BlockModal from './components/BlockModal';
 import GoalModal from './components/GoalModal';
 import './App.css';
 
-let nextId = 100;
 function genId() {
-  return `block-${nextId++}`;
+  return `block-${crypto.randomUUID()}`;
 }
 
 const DEFAULT_BLOCKS = [
@@ -60,8 +59,8 @@ function loadState() {
         goal: parsed.goal || DEFAULT_GOAL,
       };
     }
-  } catch {
-    // ignore
+  } catch (e) {
+    console.error('Failed to load saved state:', e);
   }
   return { blocks: DEFAULT_BLOCKS, goal: DEFAULT_GOAL };
 }
