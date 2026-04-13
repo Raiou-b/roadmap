@@ -1,0 +1,436 @@
+/* ============================================================
+   Global Reset & Base
+   ============================================================ */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --bg: #f5f5f0;
+  --header-bg: #ffffff;
+  --canvas-bg: #fafaf7;
+  --text: #333;
+  --text-light: #888;
+  --border: #ddd;
+  --row-top: rgba(33, 150, 243, 0.05);
+  --row-main: rgba(255, 255, 255, 0.3);
+  --row-bottom: rgba(255, 152, 0, 0.05);
+  --accent: #2196f3;
+  --danger: #f44336;
+  --shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+body {
+  font-family: 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Noto Sans JP',
+    'Yu Gothic', 'Meiryo', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+}
+
+/* ============================================================
+   App Layout
+   ============================================================ */
+.app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.app-header {
+  background: var(--header-bg);
+  padding: 20px 32px 16px;
+  border-bottom: 1px solid var(--border);
+  box-shadow: var(--shadow);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.app-header h1 {
+  font-size: 1.6rem;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.app-subtitle {
+  color: var(--text-light);
+  font-size: 0.85rem;
+  margin-bottom: 12px;
+}
+
+.toolbar {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.toolbar button {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.1s, box-shadow 0.15s;
+}
+
+.toolbar button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+.btn-add {
+  background: var(--accent);
+  color: #fff;
+}
+
+.btn-goal {
+  background: #ff9800;
+  color: #fff;
+}
+
+.btn-reset {
+  background: #eee;
+  color: #555;
+}
+
+.app-main {
+  flex: 1;
+  padding: 24px;
+  overflow: hidden;
+}
+
+/* ============================================================
+   Roadmap Canvas
+   ============================================================ */
+.roadmap-scroll-container {
+  overflow-x: auto;
+  overflow-y: auto;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--canvas-bg);
+  box-shadow: var(--shadow);
+}
+
+.roadmap-canvas {
+  position: relative;
+  min-height: 350px;
+  user-select: none;
+}
+
+/* Grid lines (10-year intervals) */
+.grid-line {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 0;
+  border-left: 2px dashed #ccc;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.grid-label {
+  position: absolute;
+  top: 8px;
+  left: 6px;
+  font-size: 0.75rem;
+  color: #999;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* Row backgrounds */
+.roadmap-row {
+  position: absolute;
+  left: 0;
+  right: 0;
+  border-bottom: 1px solid #eee;
+  display: flex;
+  align-items: center;
+}
+
+.roadmap-row-top {
+  background: var(--row-top);
+}
+
+.roadmap-row-main {
+  background: var(--row-main);
+}
+
+.roadmap-row-bottom {
+  background: var(--row-bottom);
+}
+
+.row-label {
+  position: sticky;
+  left: 0;
+  width: 140px;
+  min-width: 140px;
+  padding: 0 12px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #666;
+  background: inherit;
+  z-index: 5;
+  height: 100%;
+  display: flex;
+  align-items: center;
+}
+
+/* ============================================================
+   Blocks
+   ============================================================ */
+.roadmap-block {
+  position: absolute;
+  height: 60px;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 4px 10px;
+  color: #fff;
+  font-weight: 600;
+  font-size: 0.82rem;
+  cursor: pointer;
+  z-index: 10;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+  transition: transform 0.15s, box-shadow 0.15s;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.roadmap-block:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.block-text {
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.block-desc {
+  font-size: 0.65rem;
+  font-weight: 400;
+  opacity: 0.85;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ============================================================
+   Goal Block
+   ============================================================ */
+.goal-block {
+  position: absolute;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 8px;
+  cursor: pointer;
+  z-index: 10;
+  box-shadow: 0 4px 16px rgba(238, 90, 36, 0.4);
+  transition: transform 0.15s, box-shadow 0.15s;
+  text-align: center;
+}
+
+.goal-block:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 20px rgba(238, 90, 36, 0.5);
+}
+
+.goal-icon {
+  font-size: 1.5rem;
+  margin-bottom: 2px;
+}
+
+.goal-text {
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.goal-desc {
+  font-size: 0.65rem;
+  opacity: 0.85;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 100%;
+}
+
+/* ============================================================
+   Modal
+   ============================================================ */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  animation: fadeIn 0.15s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.modal-content {
+  background: #fff;
+  border-radius: 12px;
+  padding: 28px 32px;
+  width: 90%;
+  max-width: 480px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  animation: slideUp 0.2s ease;
+}
+
+@keyframes slideUp {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.modal-content h2 {
+  font-size: 1.2rem;
+  margin-bottom: 20px;
+  color: var(--text);
+}
+
+.form-group {
+  margin-bottom: 16px;
+}
+
+.form-group label {
+  display: block;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #555;
+  margin-bottom: 6px;
+}
+
+.form-group input[type='text'],
+.form-group input[type='number'],
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-family: inherit;
+  transition: border-color 0.15s;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.15);
+}
+
+.form-row {
+  display: flex;
+  gap: 12px;
+}
+
+.form-row .form-group {
+  flex: 1;
+}
+
+.color-picker {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.color-swatch {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 3px solid transparent;
+  cursor: pointer;
+  transition: transform 0.1s;
+}
+
+.color-swatch:hover {
+  transform: scale(1.15);
+}
+
+.color-swatch.selected {
+  border-color: #333;
+  box-shadow: 0 0 0 2px #fff, 0 0 0 4px #333;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid #eee;
+}
+
+.modal-actions-right {
+  display: flex;
+  gap: 8px;
+  margin-left: auto;
+}
+
+.btn-save,
+.btn-cancel,
+.btn-delete {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.1s;
+}
+
+.btn-save {
+  background: var(--accent);
+  color: #fff;
+}
+
+.btn-save:hover {
+  background: #1976d2;
+}
+
+.btn-cancel {
+  background: #eee;
+  color: #555;
+}
+
+.btn-cancel:hover {
+  background: #ddd;
+}
+
+.btn-delete {
+  background: var(--danger);
+  color: #fff;
+}
+
+.btn-delete:hover {
+  background: #d32f2f;
+}
